@@ -278,6 +278,55 @@
 
   .reveal{ opacity:0; transform:translateY(14px); transition:opacity .6s ease, transform .6s ease; }
   .reveal.is-visible{ opacity:1; transform:none; }
+
+  /* ---------- typewriter role ---------- */
+  .type-role{ display:inline-block; min-height:1.3em; }
+  .type-cursor{ display:inline-block; width:2px; height:0.95em; vertical-align:-0.12em; background:var(--margin-red); margin-inline-start:2px; animation:blink 0.9s steps(1) infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  /* ---------- clickable cards ---------- */
+  .service-card, .project-card{ cursor:pointer; transition:transform .25s ease, box-shadow .25s ease; }
+  .service-card:hover, .project-card:hover{ transform:translateY(-4px); box-shadow:0 10px 24px rgba(23,38,42,0.10); position:relative; z-index:1; }
+  .card-hint{ font-family:var(--mono); font-size:11px; color:var(--rule-strong); margin-top:14px; text-transform:uppercase; letter-spacing:.06em; }
+  html[dir="rtl"] .card-hint{ letter-spacing:0; }
+  .project-body .card-hint{ margin-top:12px; }
+
+  /* ---------- certificates with image ---------- */
+  .cert-card{ border-inline-start:3px solid var(--brass); padding:0; overflow:hidden; }
+  .cert-card .cert-thumb{ aspect-ratio:16/10.5; overflow:hidden; background:#0e1a19; }
+  .cert-card .cert-thumb img{ width:100%; height:100%; object-fit:cover; object-position:top; }
+  .cert-card .cert-inner{ padding:20px 22px 22px; display:flex; flex-direction:column; gap:8px; flex:1; }
+  .cert-card{ display:flex; flex-direction:column; }
+
+  /* ---------- modal ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(15,22,20,0.72); backdrop-filter:blur(2px);
+    display:none; align-items:center; justify-content:center; z-index:200; padding:24px;
+  }
+  .modal-overlay.is-open{ display:flex; }
+  .modal-box{
+    background:var(--paper); max-width:640px; width:100%; max-height:85vh; overflow-y:auto;
+    border-radius:var(--radius); position:relative; border:1px solid var(--rule);
+    box-shadow:0 24px 60px rgba(0,0,0,0.35);
+  }
+  .modal-box .margin-rule{ display:none; }
+  .modal-head{ background:var(--panel-dark); color:var(--cream-on-dark); padding:26px 30px; }
+  .modal-head .eyebrow{ color:#8FAE8A; }
+  .modal-head h3{ color:var(--cream-on-dark); font-size:24px; margin-top:8px; }
+  .modal-body{ padding:26px 30px 32px; }
+  .modal-body img{ width:100%; border-radius:var(--radius); margin-bottom:20px; border:1px solid var(--rule); }
+  .modal-section{ margin-top:18px; }
+  .modal-section:first-child{ margin-top:0; }
+  .modal-section .m-label{ font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--rule-strong); font-weight:600; }
+  html[dir="rtl"] .modal-section .m-label{ letter-spacing:0; }
+  .modal-section p{ margin:6px 0 0; color:var(--ink-soft); font-size:14.5px; }
+  .modal-close{
+    position:absolute; top:18px; inset-inline-end:20px; width:34px; height:34px; border-radius:50%;
+    background:rgba(237,231,214,0.14); border:1px solid rgba(237,231,214,0.4); color:var(--cream-on-dark);
+    font-size:18px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .modal-close:hover{ background:rgba(237,231,214,0.26); }
+  body.modal-locked{ overflow:hidden; }
 </style>
 </head>
 <body>
@@ -311,7 +360,10 @@
       <div class="reveal is-visible">
         <div class="eyebrow" data-en="CHIEF ACCOUNTANT · CMA · RIYADH, KSA" data-ar="محاسب أول · CMA · الرياض، السعودية">CHIEF ACCOUNTANT · CMA · RIYADH, KSA</div>
         <h1 data-en="Mahgoub Abdelkarim" data-ar="محجوب عبدالكريم">Mahgoub Abdelkarim</h1>
-        <div class="role" data-en="Chief Accountant — Accounts Manager — Financial Reporting" data-ar="محاسب أول — مدير حسابات — التقارير المالية">Chief Accountant — Accounts Manager — Financial Reporting</div>
+        <div class="role">
+          <span data-en="I'm a" data-ar="أنا">I'm a</span>
+          <span class="type-role" id="typeRole"></span><span class="type-cursor" id="typeCursor">&nbsp;</span>
+        </div>
         <p class="lede" data-en="Ten-plus years closing the books, controlling costs, and turning financial data into decisions leadership can act on — backed by a CMA and a growing toolkit in Power BI and analytics." data-ar="أكثر من عشر سنوات في إقفال الحسابات، ضبط التكاليف، وتحويل البيانات المالية إلى قرارات تدعم الإدارة — بخلفية CMA وأدوات تحليل بيانات مثل Power BI.">Ten-plus years closing the books, controlling costs, and turning financial data into decisions leadership can act on — backed by a CMA and a growing toolkit in Power BI and analytics.</p>
 
         <div class="hero-ctas">
@@ -421,25 +473,29 @@
     </div>
 
     <div class="services-grid reveal">
-      <div class="service-card">
+      <div class="service-card" data-modal="service-1">
         <div class="service-num">01</div>
         <h3 data-en="Financial Reporting &amp; IFRS" data-ar="التقارير المالية ومعايير IFRS">Financial Reporting &amp; IFRS</h3>
         <p data-en="Full-cycle GL, AP/AR, and month-end close, with statements prepared to IFRS standard." data-ar="دورة محاسبية كاملة (الأستاذ العام، الدائنون والمدينون)، وإقفال شهري، وقوائم مالية وفق IFRS.">Full-cycle GL, AP/AR, and month-end close, with statements prepared to IFRS standard.</p>
+        <div class="card-hint" data-en="Click for details ›" data-ar="اضغط للتفاصيل ›">Click for details ›</div>
       </div>
-      <div class="service-card">
+      <div class="service-card" data-modal="service-2">
         <div class="service-num">02</div>
         <h3 data-en="Budgeting &amp; Cost Control" data-ar="الموازنات وضبط التكاليف">Budgeting &amp; Cost Control</h3>
         <p data-en="Budgets, forecasts, and cost-management workflows that keep spend accountable." data-ar="إعداد الموازنات والتنبؤات المالية وأنظمة ضبط التكاليف لضمان الانضباط في الإنفاق.">Budgets, forecasts, and cost-management workflows that keep spend accountable.</p>
+        <div class="card-hint" data-en="Click for details ›" data-ar="اضغط للتفاصيل ›">Click for details ›</div>
       </div>
-      <div class="service-card">
+      <div class="service-card" data-modal="service-3">
         <div class="service-num">03</div>
         <h3 data-en="Cash Flow &amp; Internal Controls" data-ar="التدفقات النقدية والرقابة الداخلية">Cash Flow &amp; Internal Controls</h3>
         <p data-en="Cash flow forecasting, bank reconciliation, and controls that hold up to audit." data-ar="التنبؤ بالتدفقات النقدية، التسويات البنكية، وأنظمة رقابة تصمد أمام المراجعة.">Cash flow forecasting, bank reconciliation, and controls that hold up to audit.</p>
+        <div class="card-hint" data-en="Click for details ›" data-ar="اضغط للتفاصيل ›">Click for details ›</div>
       </div>
-      <div class="service-card">
+      <div class="service-card" data-modal="service-4">
         <div class="service-num">04</div>
         <h3 data-en="BI Dashboards &amp; Automation" data-ar="لوحات تحكم Power BI والأتمتة">BI Dashboards &amp; Automation</h3>
         <p data-en="Power BI dashboards and Excel/Power Query automation that turn raw ledgers into KPIs." data-ar="لوحات تحكم Power BI وأتمتة عبر Excel وPower Query لتحويل البيانات الخام إلى مؤشرات أداء.">Power BI dashboards and Excel/Power Query automation that turn raw ledgers into KPIs.</p>
+        <div class="card-hint" data-en="Click for details ›" data-ar="اضغط للتفاصيل ›">Click for details ›</div>
       </div>
     </div>
   </div>
@@ -493,7 +549,7 @@
     </div>
 
     <div class="projects-grid reveal">
-      <div class="project-card">
+      <div class="project-card" data-modal="project-churn">
         <div class="project-thumb"><img src="assets/project-churn.jpeg" alt="Telecom churn dashboard"></div>
         <div class="project-body">
           <h3 data-en="Telecom Churn Strategy Dashboard" data-ar="لوحة تحكم تحليل تسرب عملاء الاتصالات">Telecom Churn Strategy Dashboard</h3>
@@ -501,10 +557,11 @@
           <div class="project-tags">
             <span class="tag">Power BI</span><span class="tag">DAX</span><span class="tag">Power Query</span><span class="tag">Data Modeling</span>
           </div>
+          <div class="card-hint" data-en="View case study ›" data-ar="عرض دراسة الحالة ›">View case study ›</div>
         </div>
       </div>
 
-      <div class="project-card">
+      <div class="project-card" data-modal="project-billionaires">
         <div class="project-thumb"><img src="assets/project-billionaires.jpeg" alt="Global billionaires dashboard"></div>
         <div class="project-body">
           <h3 data-en="Global Billionaires Analytics" data-ar="تحليل أثرياء العالم">Global Billionaires Analytics</h3>
@@ -512,10 +569,11 @@
           <div class="project-tags">
             <span class="tag">Power BI</span><span class="tag">Data Cleaning</span><span class="tag">Dashboard Design</span>
           </div>
+          <div class="card-hint" data-en="View case study ›" data-ar="عرض دراسة الحالة ›">View case study ›</div>
         </div>
       </div>
 
-      <div class="project-card">
+      <div class="project-card" data-modal="project-nobel">
         <div class="project-thumb"><img src="assets/project-nobel.jpeg" alt="Nobel Prize dashboard"></div>
         <div class="project-body">
           <h3 data-en="Nobel Laureates Dashboard" data-ar="لوحة تحكم جوائز نوبل">Nobel Laureates Dashboard</h3>
@@ -523,10 +581,11 @@
           <div class="project-tags">
             <span class="tag">Power BI</span><span class="tag">DAX</span><span class="tag">Data Visualization</span>
           </div>
+          <div class="card-hint" data-en="View case study ›" data-ar="عرض دراسة الحالة ›">View case study ›</div>
         </div>
       </div>
 
-      <div class="project-card">
+      <div class="project-card" data-modal="project-pokemon">
         <div class="project-thumb"><img src="assets/project-pokemon.jpeg" alt="Pokemon stats dashboard"></div>
         <div class="project-body">
           <h3 data-en="Pokémon Stats &amp; Team Optimizer" data-ar="لوحة تحكم إحصائيات بوكيمون">Pokémon Stats &amp; Team Optimizer</h3>
@@ -534,6 +593,7 @@
           <div class="project-tags">
             <span class="tag">Power BI</span><span class="tag">EDA</span><span class="tag">Dashboard Design</span>
           </div>
+          <div class="card-hint" data-en="View case study ›" data-ar="عرض دراسة الحالة ›">View case study ›</div>
         </div>
       </div>
     </div>
@@ -551,44 +611,63 @@
 
     <div class="certs-grid reveal">
       <div class="cert-card">
-        <div class="cert-issuer">IMA / ICMA</div>
-        <h3 data-en="Certified Management Accountant (CMA) — Parts 1 &amp; 2" data-ar="محاسب إداري معتمد (CMA) — الجزء الأول والثاني">Certified Management Accountant (CMA) — Parts 1 &amp; 2</h3>
-        <div class="cert-date ltr-nums">Oct 2025 · Jun 2026</div>
+        <div class="cert-thumb"><img src="assets/cert-cma.jpg" alt="CMA certificate"></div>
+        <div class="cert-inner">
+          <div class="cert-issuer">IMA / ICMA</div>
+          <h3 data-en="Certified Management Accountant (CMA) — Parts 1 &amp; 2" data-ar="محاسب إداري معتمد (CMA) — الجزء الأول والثاني">Certified Management Accountant (CMA) — Parts 1 &amp; 2</h3>
+          <div class="cert-date ltr-nums">Oct 2025 · Jun 2026</div>
+        </div>
       </div>
       <div class="cert-card">
-        <div class="cert-issuer">Corporate Finance Institute</div>
-        <h3 data-en="AI for Finance Specialization" data-ar="تخصص الذكاء الاصطناعي في المالية">AI for Finance Specialization</h3>
-        <div class="cert-date ltr-nums">Jan 2026</div>
+        <div class="cert-thumb"><img src="assets/cert-ai-finance.jpg" alt="AI for Finance Specialization certificate"></div>
+        <div class="cert-inner">
+          <div class="cert-issuer">Corporate Finance Institute</div>
+          <h3 data-en="AI for Finance Specialization" data-ar="تخصص الذكاء الاصطناعي في المالية">AI for Finance Specialization</h3>
+          <div class="cert-date ltr-nums">Jan 2026</div>
+        </div>
       </div>
       <div class="cert-card">
-        <div class="cert-issuer">Corporate Finance Institute</div>
-        <h3 data-en="Financial Modeling &amp; Valuation Analyst (FMVA)" data-ar="محلل النمذجة المالية والتقييم (FMVA)">Financial Modeling &amp; Valuation Analyst (FMVA)</h3>
-        <div class="cert-date ltr-nums">2022</div>
+        <div class="cert-thumb"><img src="assets/cert-google.jpeg" alt="Google Prepare Data for Exploration certificate"></div>
+        <div class="cert-inner">
+          <div class="cert-issuer">Google · Coursera</div>
+          <h3 data-en="Prepare Data for Exploration" data-ar="تجهيز البيانات للاستكشاف">Prepare Data for Exploration</h3>
+          <div class="cert-date ltr-nums">Jun 2022</div>
+          <a class="cert-link" href="https://coursera.org/verify/33298352UEXL" target="_blank" rel="noopener" data-en="View certificate" data-ar="عرض الشهادة">View certificate</a>
+        </div>
       </div>
       <div class="cert-card">
-        <div class="cert-issuer">Google · Coursera</div>
-        <h3 data-en="Prepare Data for Exploration" data-ar="تجهيز البيانات للاستكشاف">Prepare Data for Exploration</h3>
-        <div class="cert-date ltr-nums">Jun 2022</div>
-        <a class="cert-link" href="https://coursera.org/verify/33298352UEXL" target="_blank" rel="noopener" data-en="View certificate" data-ar="عرض الشهادة">View certificate</a>
+        <div class="cert-inner">
+          <div class="cert-issuer">Corporate Finance Institute</div>
+          <h3 data-en="Financial Modeling &amp; Valuation Analyst (FMVA)" data-ar="محلل النمذجة المالية والتقييم (FMVA)">Financial Modeling &amp; Valuation Analyst (FMVA)</h3>
+          <div class="cert-date ltr-nums">2022</div>
+        </div>
       </div>
       <div class="cert-card">
-        <div class="cert-issuer">Google</div>
-        <h3 data-en="Google Data Analytics" data-ar="تحليل البيانات من جوجل">Google Data Analytics</h3>
-        <div class="cert-date ltr-nums">2022</div>
+        <div class="cert-inner">
+          <div class="cert-issuer">Google</div>
+          <h3 data-en="Google Data Analytics" data-ar="تحليل البيانات من جوجل">Google Data Analytics</h3>
+          <div class="cert-date ltr-nums">2022</div>
+        </div>
       </div>
       <div class="cert-card">
-        <div class="cert-issuer">CFA Institute</div>
-        <h3 data-en="Investment Foundations Certificate" data-ar="شهادة أساسيات الاستثمار">Investment Foundations Certificate</h3>
-        <div class="cert-date ltr-nums">2021</div>
+        <div class="cert-inner">
+          <div class="cert-issuer">CFA Institute</div>
+          <h3 data-en="Investment Foundations Certificate" data-ar="شهادة أساسيات الاستثمار">Investment Foundations Certificate</h3>
+          <div class="cert-date ltr-nums">2021</div>
+        </div>
       </div>
       <div class="cert-card">
-        <div class="cert-issuer" data-en="Self-study" data-ar="دراسة ذاتية">Self-study</div>
-        <h3 data-en="International Financial Reporting (IFR) Certificate" data-ar="شهادة التقارير المالية الدولية (IFR)">International Financial Reporting (IFR) Certificate</h3>
-        <div class="cert-date ltr-nums">2024</div>
+        <div class="cert-inner">
+          <div class="cert-issuer" data-en="Self-study" data-ar="دراسة ذاتية">Self-study</div>
+          <h3 data-en="International Financial Reporting (IFR) Certificate" data-ar="شهادة التقارير المالية الدولية (IFR)">International Financial Reporting (IFR) Certificate</h3>
+          <div class="cert-date ltr-nums">2024</div>
+        </div>
       </div>
       <div class="cert-card">
-        <div class="cert-issuer">DTC</div>
-        <h3 data-en="Certified Training of Trainers (TOT)" data-ar="شهادة تدريب المدربين (TOT)">Certified Training of Trainers (TOT)</h3>
+        <div class="cert-inner">
+          <div class="cert-issuer">DTC</div>
+          <h3 data-en="Certified Training of Trainers (TOT)" data-ar="شهادة تدريب المدربين (TOT)">Certified Training of Trainers (TOT)</h3>
+        </div>
       </div>
     </div>
   </div>
@@ -721,6 +800,13 @@
   <span data-en=" Mahgoub Abdelkarim. All rights reserved." data-ar=" محجوب عبدالكريم. جميع الحقوق محفوظة."> Mahgoub Abdelkarim. All rights reserved.</span>
 </footer>
 
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box" id="modalBox">
+    <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
 <script>
   // ---------- language toggle ----------
   const langToggle = document.getElementById('langToggle');
@@ -781,6 +867,195 @@
     }, { threshold: 0.4 });
     tio.observe(tallyEl);
   }
+
+  // ---------- typewriter hero role ----------
+  const roles = {
+    en: ["Chief Accountant", "CMA-Certified", "Accounts Manager", "Financial Reporting Lead"],
+    ar: ["محاسب أول", "حاصل على CMA", "مدير حسابات", "مسؤول التقارير المالية"]
+  };
+  const typeEl = document.getElementById('typeRole');
+  let twRoleIndex = 0, twCharIndex = 0, twDeleting = false, twTimer = null;
+
+  function typeTick(){
+    const list = roles[currentLang] || roles.en;
+    const word = list[twRoleIndex % list.length];
+
+    if(!twDeleting){
+      twCharIndex++;
+      typeEl.textContent = word.slice(0, twCharIndex);
+      if(twCharIndex === word.length){
+        twDeleting = true;
+        twTimer = setTimeout(typeTick, 1400);
+        return;
+      }
+    } else {
+      twCharIndex--;
+      typeEl.textContent = word.slice(0, twCharIndex);
+      if(twCharIndex === 0){
+        twDeleting = false;
+        twRoleIndex++;
+      }
+    }
+    twTimer = setTimeout(typeTick, twDeleting ? 45 : 85);
+  }
+
+  function restartTypewriter(){
+    clearTimeout(twTimer);
+    twCharIndex = 0;
+    twDeleting = false;
+    typeEl.textContent = "";
+    typeTick();
+  }
+  if(typeEl) restartTypewriter();
+
+  // ---------- modal content (bilingual) ----------
+  const modalData = {
+    "service-1": {
+      en: { title:"Financial Reporting &amp; IFRS", body:[
+        ["The problem","Management needs numbers it can trust and act on the same day the books close — not weeks later."],
+        ["The approach","Full-cycle GL, AP and AR management, monthly close, and financial statements prepared to IFRS standard, coordinated closely with external auditors."],
+        ["The result","Clean, audit-ready statements and a close cycle management can rely on for real decisions."]
+      ]},
+      ar: { title:"التقارير المالية ومعايير IFRS", body:[
+        ["المشكلة","الإدارة محتاجة أرقام تقدر تثق فيها وتتصرف بناءً عليها من نفس يوم الإقفال، مش بعد أسابيع."],
+        ["الأسلوب","إدارة كاملة للأستاذ العام والدائنين والمدينين، وإقفال شهري، وقوائم مالية معدة وفق معايير IFRS، بالتنسيق المستمر مع مراجعي الحسابات."],
+        ["النتيجة","قوائم مالية نظيفة وجاهزة للمراجعة، ودورة إقفال تقدر الإدارة تعتمد عليها في قراراتها."]
+      ]}
+    },
+    "service-2": {
+      en: { title:"Budgeting &amp; Cost Control", body:[
+        ["The problem","Costs drift and budgets slip when there's no structured planning and forecasting cycle."],
+        ["The approach","Building and tracking budgets, rolling forecasts, and cost-management routines tied to actual spend."],
+        ["The result","A tighter link between planned and actual numbers, with variances caught early instead of at year-end."]
+      ]},
+      ar: { title:"الموازنات وضبط التكاليف", body:[
+        ["المشكلة","التكاليف بتنحرف والموازنات بتتخطى الحدود لما ما يكونش فيه دورة تخطيط وتنبؤ منظمة."],
+        ["الأسلوب","بناء ومتابعة الموازنات، والتنبؤات الدورية، وأنظمة ضبط التكاليف المرتبطة بالإنفاق الفعلي."],
+        ["النتيجة","ربط أدق بين الأرقام المخططة والفعلية، مع اكتشاف الانحرافات بدري بدل نهاية السنة."]
+      ]}
+    },
+    "service-3": {
+      en: { title:"Cash Flow &amp; Internal Controls", body:[
+        ["The problem","Cash surprises and weak controls put both liquidity and audit outcomes at risk."],
+        ["The approach","Cash flow forecasting, daily bank reconciliation, petty cash oversight, and documented accounting controls."],
+        ["The result","Predictable liquidity and controls that hold up under external audit scrutiny."]
+      ]},
+      ar: { title:"التدفقات النقدية والرقابة الداخلية", body:[
+        ["المشكلة","المفاجآت في السيولة وضعف الرقابة بتهدد السيولة ونتائج المراجعة الخارجية."],
+        ["الأسلوب","التنبؤ بالتدفقات النقدية، التسوية البنكية اليومية، الإشراف على العهدة النثرية، وضوابط محاسبية موثقة."],
+        ["النتيجة","سيولة يمكن توقعها، وضوابط تصمد أمام مراجعة الحسابات الخارجية."]
+      ]}
+    },
+    "service-4": {
+      en: { title:"BI Dashboards &amp; Automation", body:[
+        ["The problem","Raw ledger exports don't tell management what changed, why, or where to look next."],
+        ["The approach","Power BI dashboards and Excel/Power Query automation layered on top of financial data to surface KPIs."],
+        ["The result","Reports that update themselves and dashboards that turn raw numbers into a story management can act on."]
+      ]},
+      ar: { title:"لوحات تحكم Power BI والأتمتة", body:[
+        ["المشكلة","تصدير بيانات الأستاذ الخام ما بيقول للإدارة إيه اللي اتغير، ليه، وفين المفروض تركّز."],
+        ["الأسلوب","لوحات تحكم Power BI وأتمتة عبر Excel وPower Query فوق البيانات المالية لإظهار مؤشرات الأداء."],
+        ["النتيجة","تقارير بتحدّث نفسها، ولوحات تحكم بتحول الأرقام الخام لقصة تقدر الإدارة تتصرف بناءً عليها."]
+      ]}
+    },
+    "project-churn": {
+      image:"assets/project-churn.jpeg",
+      en: { title:"Telecom Churn Strategy Dashboard", body:[
+        ["The problem","Telecom churn was eating into revenue, but it wasn't clear which offers, contracts, or payment methods were driving customers away."],
+        ["The solution","A Power BI dashboard modeling 7,043 customers with DAX measures and drill-through views across offer, contract type, internet type, and payment method."],
+        ["The impact","Surfaced $21.37M in revenue tied to churned customers and pinpointed competitor offers as the leading churn driver — guiding where retention spend should go."]
+      ]},
+      ar: { title:"لوحة تحكم تحليل تسرب عملاء الاتصالات", body:[
+        ["المشكلة","تسرب العملاء في قطاع الاتصالات كان بياكل من الإيرادات، لكن ما كانش واضح إن العروض أو العقود أو طرق الدفع هي السبب."],
+        ["الحل","لوحة Power BI بتنمذج 7,043 عميل بمقاييس DAX وعروض تفصيلية حسب العرض ونوع العقد ونوع الإنترنت وطريقة الدفع."],
+        ["الأثر","إظهار 21.37 مليون دولار من الإيرادات المرتبطة بالعملاء المتسربين، وتحديد عروض المنافسين كأكبر سبب للتسرب — لتوجيه إنفاق الاحتفاظ بالعملاء."]
+      ]}
+    },
+    "project-billionaires": {
+      image:"assets/project-billionaires.jpeg",
+      en: { title:"Global Billionaires Analytics", body:[
+        ["The problem","Wealth data across thousands of individuals is hard to compare across country, age, and industry without structure."],
+        ["The solution","A cleaned and modeled Power BI dashboard profiling 2,668 billionaires by country, gender, age group, and source of wealth."],
+        ["The impact","Instant answers to questions like the youngest and oldest billionaires by gender, and the richest across the Arab world, by country."]
+      ]},
+      ar: { title:"تحليل أثرياء العالم", body:[
+        ["المشكلة","بيانات الثروات لآلاف الأفراد صعب مقارنتها حسب الدولة والعمر والقطاع من غير هيكلة."],
+        ["الحل","لوحة Power BI منظفة ومنمذجة لتحليل 2,668 مليارديراً حسب الدولة والجنس والفئة العمرية ومصدر الثروة."],
+        ["الأثر","إجابات فورية لأسئلة زي أصغر وأكبر مليارديرات حسب الجنس، وأغنى الأثرياء في الوطن العربي حسب الدولة."]
+      ]}
+    },
+    "project-nobel": {
+      image:"assets/project-nobel.jpeg",
+      en: { title:"Nobel Laureates Dashboard", body:[
+        ["The problem","119 years of Nobel Prize data holds patterns by gender, age, and country that are invisible in a flat list."],
+        ["The solution","A Power BI dashboard breaking down 923 awards across 6 categories, with age-group pyramids and country-of-birth analysis."],
+        ["The impact","Clear visibility into gender gaps by category and the age at which laureates are typically recognized."]
+      ]},
+      ar: { title:"لوحة تحكم جوائز نوبل", body:[
+        ["المشكلة","بيانات جوائز نوبل على مدى 119 عاماً فيها أنماط حسب الجنس والعمر والدولة مش ظاهرة في قائمة عادية."],
+        ["الحل","لوحة Power BI تحلل 923 جائزة عبر 6 مجالات، مع أهرامات للفئات العمرية وتحليل لبلد الميلاد."],
+        ["الأثر","رؤية واضحة للفجوة بين الجنسين حسب المجال، والعمر اللي غالباً بيتكرم فيه الفائزون."]
+      ]}
+    },
+    "project-pokemon": {
+      image:"assets/project-pokemon.jpeg",
+      en: { title:"Pokémon Stats &amp; Team Optimizer", body:[
+        ["The problem","With 801 Pokémon across generations and types, picking a genuinely balanced team by the numbers is hard by eye."],
+        ["The solution","An exploratory Power BI dashboard comparing attack, defense, speed, and type distribution across generations."],
+        ["The impact","A data-backed 'dream team' view balancing HP, attack, and defense — a compact showcase of EDA and dashboard design skills."]
+      ]},
+      ar: { title:"لوحة تحكم إحصائيات بوكيمون", body:[
+        ["المشكلة","مع 801 بوكيمون عبر أجيال وأنواع مختلفة، اختيار فريق متوازن فعلاً بالأرقام صعب بالعين المجردة."],
+        ["الحل","لوحة Power BI استكشافية بتقارن الهجوم والدفاع والسرعة وتوزيع الأنواع عبر الأجيال."],
+        ["الأثر","فريق أحلام مبني على بيانات وبيوازن بين نقاط الحياة والهجوم والدفاع — عرض مصغر لمهارات EDA وتصميم لوحات التحكم."]
+      ]}
+    }
+  };
+
+  function renderModal(key){
+    const data = modalData[key];
+    if(!data) return;
+    const d = data[currentLang] || data.en;
+    let html = '<div class="modal-head"><div class="eyebrow">' +
+      (currentLang === 'ar' ? 'التفاصيل' : 'DETAILS') + '</div><h3>' + d.title + '</h3></div><div class="modal-body">';
+    if(data.image){ html += '<img src="' + data.image + '" alt="">'; }
+    d.body.forEach(([label, text]) => {
+      html += '<div class="modal-section"><div class="m-label">' + label + '</div><p>' + text + '</p></div>';
+    });
+    html += '</div>';
+    document.getElementById('modalContent').innerHTML = html;
+  }
+
+  const overlay = document.getElementById('modalOverlay');
+  let openModalKey = null;
+
+  function openModal(key){
+    if(!modalData[key]) return;
+    openModalKey = key;
+    renderModal(key);
+    overlay.classList.add('is-open');
+    document.body.classList.add('modal-locked');
+  }
+  function closeModal(){
+    openModalKey = null;
+    overlay.classList.remove('is-open');
+    document.body.classList.remove('modal-locked');
+  }
+
+  document.querySelectorAll('[data-modal]').forEach(card => {
+    card.addEventListener('click', () => openModal(card.getAttribute('data-modal')));
+  });
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if(e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeModal(); });
+
+  // keep typewriter + open modal in sync when language changes
+  const _applyLang = applyLang;
+  applyLang = function(lang){
+    _applyLang(lang);
+    if(typeEl) restartTypewriter();
+    if(openModalKey) renderModal(openModalKey);
+  };
 </script>
 
 </body>
